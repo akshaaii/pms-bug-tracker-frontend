@@ -1,0 +1,6 @@
+{
+  "name": "CSE - PMS",
+  "description": "Engineering Workflow Management application for tracking and managing developer bugs and system health.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
