@@ -51,7 +51,7 @@ export default function AppShell() {
 
   const location = useLocation();
 
-  // Rule 1: wait for the GET /session/me boot check to resolve before
+  // Wait for the GET /session/me boot check to resolve before
   // deciding whether to redirect - otherwise a hard refresh with a still-valid
   // session cookie would flash the user to /login before the check completes.
   if (!authChecked) {

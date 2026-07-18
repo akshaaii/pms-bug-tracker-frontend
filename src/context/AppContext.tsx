@@ -18,7 +18,7 @@ import {
   setRateLimitHandler,
 } from '../api';
 import { Bug, User, BugStatus, FilterState, Role, Project, ProjectModule, Developer, PageInfo } from '../types';
-import { USERS } from '../data';
+import { USERS } from '../constants';
 
 // ─── Context Shape ─────────────────────────────────────────────────────────────
 
@@ -170,7 +170,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isReportDrawerOpen, setIsReportDrawerOpen] = useState(false);
   const [isLearningsOpen, setIsLearningsOpen] = useState(false);
 
-  // Rule 12: GET /bugs returns a lightweight summary per row (no description,
+  // GET /bugs returns a lightweight summary per row (no description,
   // environment, comments, screenshots, expectedOutput/actualResult, or
   // versionNum). Whenever a modal that needs the full record opens, fetch
   // GET /bugs/{bugId} and merge the full detail into local state so Edit/View
@@ -188,7 +188,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [selectedBugId, editBugId]);
 
   // ─── Session boot check ─────────────────────────────────────────────────────
-  // Rule 1: on app boot, validate the session against the backend before
+  // on app boot, validate the session against the backend before
   // rendering anything protected. localStorage is only used to remember the
   // demo-login username (for the avatar lookup) - it is NEVER trusted as
   // proof of an active session by itself.
@@ -217,7 +217,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     })();
   }, []);
 
-  // Rule 1: any API call returning 401 anywhere in the app triggers an
+  // Any API call returning 401 anywhere in the app triggers an
   // immediate auto-logout, registered once here so every call site benefits.
   useEffect(() => {
     setUnauthorizedHandler(() => {
@@ -225,7 +225,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setBugs([]);
       localStorage.removeItem('pms_user_session');
     });
-    // Rule 20: surface rate-limit hits without automatic retries.
+    // Surface rate-limit hits without automatic retries.
     setRateLimitHandler(() => {
       // eslint-disable-next-line no-alert
       alert('Too many requests, please slow down.');
@@ -273,7 +273,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
     // Fall back to scanning every cached project's modules (covers cases
     // where the caller doesn't know the projectId up front).
-    for (const mods of Object.values(modulesByProject)) {
+    for (const mods of Object.values(modulesByProject) as ProjectModule[][]) {
       const found = mods.find(m => m.moduleId === moduleId);
       if (found) return found.moduleName;
     }
@@ -303,7 +303,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       priority: filters.priority !== 'All Priorities' ? filters.priority : undefined,
       severity: filters.severity !== 'All Severities' ? filters.severity : undefined,
     };
-    // Rule 24: never send assignedTo as a filter for developers - the
+    // Never send assignedTo as a filter for developers - the
     // backend force-filters their results server-side regardless.
     if (currentUser?.role !== 'Sr. Developer' && filters.assignedTo !== 'All Users') {
       params.assignedTo = filters.assignedTo;
@@ -383,8 +383,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // ─── Bug mutations ──────────────────────────────────────────────────────────
   // These intentionally do NOT alert()/swallow errors themselves - they
   // throw, so the calling form/modal can keep its own loading + error state
-  // (disable-until-response, re-enable-on-error - rules 7 & 8) and show the
-  // backend's exact message (rule 11).
+  // (disable-until-response, re-enable-on-error) and show the
+  // backend's exact message.
 
   const handleAddNewBug = async (payload: CreateBugPayload): Promise<Bug> => {
     const created = await apiCreateBug({

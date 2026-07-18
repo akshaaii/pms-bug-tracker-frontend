@@ -6,12 +6,9 @@ import { useAppContext } from '../context/AppContext';
  * Kanban / Task Board page.
  * Four columns: OPEN/RE-OPENED → IN PROGRESS → TESTING → RESOLVED/CLOSED.
  *
- * NOTE: the old version of this page mutated bug status directly on click,
- * bypassing the backend's mandatory-comment requirement (rule 4), the
- * role-restricted status list (rule 2), and the valid-transition graph
- * (rule 3). Every status change now goes through the same modals used
- * elsewhere in the app, which collect the required comment and only ever
- * submit through the real PATCH /bugs/{id}/status or /reopen endpoints.
+ * Status changes always go through the same modals used elsewhere in the
+ * app, which collect the required comment and submit through the real
+ * PATCH /bugs/{id}/status or /reopen endpoints - never a direct mutation.
  */
 export default function KanbanPage() {
   const { bugs, setSelectedBugId, setStatusChangeBugId, setReopenBugId, currentUser } = useAppContext();

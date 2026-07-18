@@ -15,9 +15,9 @@ interface EditBugModalProps {
 
 export const SEVERITIES: Severity[] = ['CRITICAL', 'MAJOR', 'MINOR', 'TRIVIAL'];
 export const PRIORITIES: Priority[] = ['LOW', 'MEDIUM', 'HIGH'];
-// Rule 15: environment is a fixed 4-value enum, never free text.
+// Environment is a fixed 4-value enum, never free text.
 export const ENVIRONMENTS = ['Development', 'SIT', 'UAT', 'Production'];
-// Rule 2: tester-only status options for the Edit form.
+// Tester-only status options for the Edit form.
 export const STATUSES: BugStatus[] = TESTER_ALLOWED_STATUSES;
 
 export default function EditBugModal({ bug, onClose, onUpdate }: EditBugModalProps) {
@@ -60,7 +60,7 @@ export default function EditBugModal({ bug, onClose, onUpdate }: EditBugModalPro
     setSubmitError('');
   }, [bug?.id, bug?.versionNum]);
 
-  // Rule 9: module dropdown loads from the project's module list.
+  // Module dropdown loads from the project's module list.
   useEffect(() => {
     if (!bug) return;
     getModulesForProject(bug.projectId).then(setModules).catch(() => setModules([]));
@@ -91,7 +91,7 @@ export default function EditBugModal({ bug, onClose, onUpdate }: EditBugModalPro
 
   const handleUpdate = async () => {
     if (isSubmitting) return;
-    // Rule 7/8: disable immediately, only re-enable on error.
+    // Disable immediately, only re-enable on error.
     setIsSubmitting(true);
     setSubmitError('');
     try {
@@ -110,11 +110,11 @@ export default function EditBugModal({ bug, onClose, onUpdate }: EditBugModalPro
       });
       onClose();
     } catch (err: any) {
-      // Rule 6: on 409 CONCURRENT_EDIT_CONFLICT, show the exact required message.
+      // On 409 CONCURRENT_EDIT_CONFLICT, show the exact required message.
       if (err.errorCode === 'CONCURRENT_EDIT_CONFLICT') {
         setSubmitError('This bug was modified by someone else since you loaded it. Please refresh and try again.');
       } else {
-        // Rule 11: show the backend's message directly for everything else.
+        // Show the backend's message directly for everything else.
         setSubmitError(err.message || 'Failed to update bug.');
       }
       setIsSubmitting(false);
@@ -277,7 +277,7 @@ export default function EditBugModal({ bug, onClose, onUpdate }: EditBugModalPro
           {/* Right Parameters Sidebar */}
           <div className="lg:w-[340px] bg-[#161a2e]/45 p-6 space-y-6 overflow-y-auto custom-scrollbar shrink-0">
 
-            {/* Module — Rule 9: real dropdown, sends moduleId, never the display name */}
+            {/* Module — real dropdown, sends moduleId, never the display name */}
             <div className="space-y-1">
               <label className="block text-[10px] font-mono font-black text-[#8e90a0] uppercase tracking-wider">Module*</label>
               <select
@@ -323,7 +323,7 @@ export default function EditBugModal({ bug, onClose, onUpdate }: EditBugModalPro
               </select>
             </div>
 
-            {/* Status (Tester options workflow — rule 2) */}
+            {/* Status (Tester options workflow — ) */}
             <div className="space-y-1">
               <label className="block text-[10px] font-mono font-black text-[#8e90a0] uppercase tracking-wider">Status (Tester Options)</label>
               <select
@@ -338,7 +338,7 @@ export default function EditBugModal({ bug, onClose, onUpdate }: EditBugModalPro
               </select>
             </div>
 
-            {/* Environment — Rule 15: fixed 4-value dropdown, never free text */}
+            {/* Environment — fixed 4-value dropdown, never free text */}
             <div className="space-y-1.5">
               <label className="block text-[10px] font-mono font-black text-[#8e90a0] uppercase tracking-wider">Environment*</label>
               <div className="bg-[#1a1f32] border border-[#2a2d3e] p-1 rounded flex items-center gap-2">
@@ -356,7 +356,7 @@ export default function EditBugModal({ bug, onClose, onUpdate }: EditBugModalPro
               </div>
             </div>
 
-            {/* Assigned To — Rule 13: real developer list, no free text */}
+            {/* Assigned To — real developer list, no free text */}
             <div className="space-y-1.5">
               <label className="block text-[10px] font-mono font-black text-[#8e90a0] uppercase tracking-wider">Assigned Engineer</label>
               <div className="flex bg-[#1a1f32] border border-[#2a2d3e] rounded p-2 items-center gap-2">
@@ -374,7 +374,7 @@ export default function EditBugModal({ bug, onClose, onUpdate }: EditBugModalPro
               </div>
             </div>
 
-            {/* Timeline date metadata — read-only, auto-set by backend (rule 23) */}
+            {/* Timeline date metadata — read-only, auto-set by backend */}
             <div className="pt-4 border-t border-[#2a2d3e]/50 space-y-2">
               <div className="flex justify-between text-xs font-sans text-[#8e90a0]">
                 <span>Created Log:</span>

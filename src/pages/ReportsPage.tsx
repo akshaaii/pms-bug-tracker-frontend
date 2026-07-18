@@ -1,8 +1,7 @@
 import React from 'react';
 
 /**
- * Reports page — extracted from App.tsx (lines 941–999).
- * Shows SLA performance metrics and VRAM heap diagnostics.
+ * Reports page. Shows SLA performance metrics and heap diagnostics.
  */
 export default function ReportsPage() {
   return (

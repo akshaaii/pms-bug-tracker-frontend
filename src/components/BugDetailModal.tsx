@@ -46,7 +46,7 @@ export default function BugDetailModal({ bug, userRole, onClose, onEdit }: BugDe
       setNewComment('');
       refetchBugs();
     } catch (err: any) {
-      // Rule 11: show the backend's message directly.
+      // Show the backend's message directly.
       setPostError(err.message || 'Failed to add comment.');
     } finally {
       setIsPosting(false);
@@ -101,7 +101,7 @@ export default function BugDetailModal({ bug, userRole, onClose, onEdit }: BugDe
           <div className="flex-grow lg:w-2/3 p-6 space-y-6 lg:border-r lg:border-[#2a2d3e]/40">
             <section className="space-y-2">
               <h3 className="text-xl font-bold font-sans tracking-tight text-[#dee1fd] leading-snug">{bug.title}</h3>
-              {/* Rule 25: plain text rendering only, never dangerouslySetInnerHTML */}
+              {/* plain text rendering only, never dangerouslySetInnerHTML */}
               {isLoadingBugDetail && !bug.description ? (
                 <p className="text-xs text-[#8e90a0] italic pt-1">Loading full details...</p>
               ) : (
@@ -140,7 +140,7 @@ export default function BugDetailModal({ bug, userRole, onClose, onEdit }: BugDe
               </section>
             )}
 
-            {/* Comments — POST /bugs/{bugId}/comments (rule 14) */}
+            {/* Comments — POST /bugs/{bugId}/comments */}
             <section className="space-y-3 pt-2 border-t border-[#2a2d3e]/50">
               <h4 className="text-[11px] font-mono font-black text-[#8e90a0] uppercase tracking-wider">
                 Comments ({localComments.length})

@@ -11,8 +11,8 @@ import {
 import { useAppContext } from '../context/AppContext';
 
 /**
- * Dashboard page — extracted from App.tsx (lines 543–689).
- * Shows summary metric cards, bug volume chart, critical hotspots, and audit timeline.
+ * Dashboard page. Shows summary metric cards, bug volume chart,
+ * critical hotspots, and audit timeline.
  */
 export default function Dashboard() {
   const {

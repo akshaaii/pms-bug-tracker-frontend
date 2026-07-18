@@ -34,7 +34,7 @@ export function ChangeStatusModal({ bug, currentUser, onClose, onConfirmStatus }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Rule 4: comment is mandatory, submit stays disabled until filled.
+    // Comment is mandatory, submit stays disabled until filled.
     if (!status || !comment.trim() || isSubmitting) return;
 
     setIsSubmitting(true);
@@ -74,7 +74,7 @@ export function ChangeStatusModal({ bug, currentUser, onClose, onConfirmStatus }
             </div>
           ) : (
             <>
-              {/* New Status — filtered to valid transitions AND role-allowed statuses (rules 2 & 3) */}
+              {/* New Status — filtered to valid transitions AND role-allowed statuses */}
               <div className="space-y-1">
                 <label className="block text-[10px] font-mono font-black text-[#8e90a0] uppercase tracking-wider">New Status*</label>
                 <select
@@ -88,7 +88,7 @@ export function ChangeStatusModal({ bug, currentUser, onClose, onConfirmStatus }
                 </select>
               </div>
 
-              {/* Comment — mandatory (rule 4) */}
+              {/* Comment — mandatory */}
               <div className="space-y-1">
                 <label className="block text-[10px] font-mono font-black text-[#8e90a0] uppercase tracking-wider">Comment*</label>
                 <textarea
@@ -148,7 +148,7 @@ interface ReassignBugModalProps {
 export function ReassignBugModal({ bug, currentUser, onClose, onConfirmReassign }: ReassignBugModalProps) {
   const { developers } = useAppContext();
 
-  // Rule 13: never allow reassigning to yourself, and only ever to another
+  // Never allow reassigning to yourself, and only ever to another
   // Sr. Developer — both enforced here in addition to the backend check.
   const eligibleDevelopers = developers.filter(d => d.employeeId !== currentUser.employeeId);
 
@@ -202,7 +202,7 @@ export function ReassignBugModal({ bug, currentUser, onClose, onConfirmReassign 
             <span>Reassigning from yourself to another Sr. Developer.</span>
           </p>
 
-          {/* Assignee — real developer list from GET /resources/developers, self excluded (rule 13) */}
+          {/* Assignee — real developer list from GET /resources/developers, self excluded */}
           <div className="space-y-1">
             <label className="block text-[10px] font-mono font-black text-[#8e90a0] uppercase tracking-wider">New Assignee*</label>
             {eligibleDevelopers.length === 0 ? (

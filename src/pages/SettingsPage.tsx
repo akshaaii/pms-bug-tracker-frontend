@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 
 /**
- * Settings page — extracted from App.tsx (lines 1001–1063).
- * Toggle state is local to this page (no need to share globally).
+ * Settings page. Toggle state is local to this page (no need to share globally).
  */
 export default function SettingsPage() {
   const [settingAlerts, setSettingAlerts] = useState(true);

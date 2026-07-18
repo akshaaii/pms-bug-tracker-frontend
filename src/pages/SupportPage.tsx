@@ -1,22 +1,21 @@
 import React from 'react';
 
 /**
- * Support / FAQ page — extracted from App.tsx (lines 1066–1086).
- * Static FAQ content, no state dependencies.
+ * Support / FAQ page. Static content, no state dependencies.
  */
 export default function SupportPage() {
   const faqs = [
     {
-      q: "How do I test Riyazs QA workflow?",
-      a: "Switch user role from the top-right header role changer badge or logout and log back in with ID 'tester' and password 'tester'. In this role, you possess full global bug creation permissions, comments additions, and can run Reopen confirmations.",
+      q: "How do I test the QA Lead workflow?",
+      a: "Switch roles from the header's quick-login options, or log in with username/password 'tester'. This role can create bugs, add comments, and confirm reopen requests.",
     },
     {
-      q: "How do I review Antony Lawrences Developer dashboard?",
-      a: "Change account to Antony Lawrence with ID 'developer' and password 'developer'. In this screen, bug listings are filtered strictly to Antony Lawrence's assigned items, mimicking corporate visibility containment parameters.",
+      q: "How do I review a developer's dashboard?",
+      a: "Log in with username/password 'developer'. Bug listings are filtered to only that developer's assigned items.",
     },
     {
-      q: "Are bug creations and statuses changes saved permanently?",
-      a: "Yes! All changes, custom comments, re-assignments, statuses transitions, and reopened proof images are written to Client-Side LocalStorage, so your data persists safely across iframe or tab reloads.",
+      q: "Are bug creations and status changes saved permanently?",
+      a: "Yes. All changes, comments, reassignments, status transitions, and reopen evidence are written to the backend database, so your data persists across sessions and devices.",
     },
   ];
 

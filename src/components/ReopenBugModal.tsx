@@ -27,7 +27,7 @@ export default function ReopenBugModal({ bug, onClose, onConfirmReopen }: Reopen
 
   if (!bug) return null;
 
-  // Rule 5: reopen is only ever valid from RESOLVED. AppShell only opens
+  // Reopen is only ever valid from RESOLVED. AppShell only opens
   // this modal via the ⋮ menu item that's itself gated on this, but we
   // double-check here too so a stale bug reference can't slip through.
   if (bug.status !== 'RESOLVED') {
@@ -44,7 +44,7 @@ export default function ReopenBugModal({ bug, onClose, onConfirmReopen }: Reopen
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (!selected) return;
-    // Rule 10: validate type/size before ever touching the API.
+    // Validate type/size before ever touching the API.
     const error = validateScreenshotFile(selected);
     if (error) {
       setFileError(error);
@@ -59,14 +59,14 @@ export default function ReopenBugModal({ bug, onClose, onConfirmReopen }: Reopen
     e.preventDefault();
     if (!comment.trim() || isSubmitting) return;
 
-    // Rule 7/8: disable immediately, only re-enable on error.
+    // Disable immediately, only re-enable on error.
     setIsSubmitting(true);
     setSubmitError('');
     try {
       await onConfirmReopen(bug.id, reason, comment.trim(), file);
       onClose();
     } catch (err: any) {
-      // Rule 11: show the backend's message directly - including 409
+      // Show the backend's message directly - including 409
       // CONCURRENT_EDIT_CONFLICT and DUPLICATE_SUBMISSION cases.
       setSubmitError(err.message || 'Failed to reopen bug.');
       setIsSubmitting(false);
@@ -111,7 +111,7 @@ export default function ReopenBugModal({ bug, onClose, onConfirmReopen }: Reopen
             </select>
           </div>
 
-          {/* Tester Comment - mandatory (rule 5) */}
+          {/* Tester Comment - mandatory */}
           <div className="space-y-1">
             <label className="block text-[10px] font-mono font-black text-[#8e90a0] uppercase tracking-wider">Tester Comment & Log Description*</label>
             <textarea
@@ -124,7 +124,7 @@ export default function ReopenBugModal({ bug, onClose, onConfirmReopen }: Reopen
             />
           </div>
 
-          {/* Screenshot upload — real file input, validated client-side (rule 10) */}
+          {/* Screenshot upload — real file input, validated client-side */}
           <div className="space-y-1.5">
             <label className="block text-[10px] font-mono font-black text-[#8e90a0] uppercase tracking-wider">Attached Proof (Screenshot)</label>
             <label

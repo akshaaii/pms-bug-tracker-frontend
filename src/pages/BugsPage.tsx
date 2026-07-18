@@ -6,7 +6,7 @@ import BugTable from '../components/BugTable';
 /**
  * Bugs page.
  * Renders the filter bar, main bug table, and real pagination controls
- * backed by the Spring Page<T> metadata returned by GET /bugs (rule 12).
+ * backed by the Spring Page<T> metadata returned by GET /bugs.
  */
 export default function BugsPage() {
   const {

@@ -1,4 +1,3 @@
-// ============================================================================
 // API client for the Spring Boot backend.
 //
 // IMPORTANT: every fetch call below includes `credentials: 'include'`.
@@ -6,18 +5,29 @@
 // /demo-auth/login on every subsequent request - without this, the
 // backend's SessionService will treat every call as logged-out, since
 // it reads identity from the session, never from the request body.
-// ============================================================================
 
 import { Bug, BugStatus, Project, ProjectModule, Developer, PageInfo } from './types';
 
-// Rule 19: never hardcode the base URL - read from the environment, with a
+// Never hardcode the base URL - read from the environment, with a
 // sane local-dev fallback.
 export const BASE_URL =
   (import.meta as any).env?.VITE_API_URL || 'http://localhost:8080/bug_tracker/api';
 
+// Screenshot URLs come back from the backend as paths relative to its own
+// origin (e.g. "/bug_tracker/api/bugs/screenshots/SCR-001"), not to the
+// frontend's. Since the two run on different ports in dev, an <img src>
+// needs the backend's origin prefixed on - this derives it from BASE_URL
+// once instead of hardcoding it a second time.
+const API_ORIGIN = new URL(BASE_URL).origin;
+
+export function resolveFileUrl(fileUrl: string): string {
+  if (!fileUrl) return fileUrl;
+  return /^https?:\/\//i.test(fileUrl) ? fileUrl : `${API_ORIGIN}${fileUrl}`;
+}
+
 // A structured API error carrying the backend's errorCode alongside the
-// human-readable message, so callers can branch on errorCode (see rule 11's
-// error-code table) instead of parsing message strings.
+// human-readable message, so callers can branch on errorCode instead of
+// parsing message strings.
 export class ApiError extends Error {
   status: number;
   errorCode: string | undefined;
@@ -97,10 +107,10 @@ export interface BugListResult {
   page: PageInfo;
 }
 
-// Rule 12: backend returns a Spring Page<T> object. We surface both the rows
+// Backend returns a Spring Page<T> object. We surface both the rows
 // (content) and the pagination metadata so the UI can render real
 // "Page X of Y" / "Showing Z results" controls instead of fabricating them.
-// Rule 24: developer role filtering (assignedTo) is entirely enforced
+// developer role filtering (assignedTo) is entirely enforced
 // server-side - we never send assignedTo as a filter param for developers.
 export async function fetchBugs(
   filters: Record<string, string | undefined> = {},
@@ -134,7 +144,7 @@ export async function fetchBugDetail(bugId: string): Promise<Bug> {
   return mapBugFromApi(json.data);
 }
 
-// Rule 21/22/23: reportedBy, bugId, createdDate, updatedDate are all
+// ReportedBy, bugId, createdDate, updatedDate are all
 // auto-assigned by the backend - we never send them on create.
 export async function createBug(bug: {
   projectId: string;
@@ -166,7 +176,7 @@ export async function createBug(bug: {
   return mapBugFromApi(json.data);
 }
 
-// Rule 6: versionNum is always sent, and read back off the response, so the
+// VersionNum is always sent, and read back off the response, so the
 // caller can keep retrying with a fresh version after a 409 CONCURRENT_EDIT_CONFLICT.
 export async function updateBug(
   bugId: string,
@@ -240,7 +250,7 @@ export async function addComment(bugId: string, content: string) {
   return json.data;
 }
 
-// Rule 10: JPG/PNG/PDF only, max 5MB - validated client-side before ever
+// JPG/PNG/PDF only, max 5MB - validated client-side before ever
 // calling the API, so an obviously-invalid file never leaves the browser.
 export const ALLOWED_SCREENSHOT_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
 export const ALLOWED_SCREENSHOT_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.pdf'];
@@ -269,7 +279,7 @@ export async function uploadScreenshot(bugId: string, file: File) {
 
   // NOTE: no Content-Type header set manually - the browser sets the
   // multipart boundary automatically. Setting it ourselves would break the
-  // upload (rule 10).
+  // upload.
   const res = await fetch(`${BASE_URL}/bugs/${bugId}/screenshots`, {
     method: 'POST',
     credentials: 'include',
@@ -334,7 +344,7 @@ function mapBugFromApi(row: any): Bug {
     createdDate: row.createdDate,
     updatedDate: row.updatedDate,
     archived: false,
-    artifacts: (row.screenshots || []).map((s: any) => s.fileUrl),
+    artifacts: (row.screenshots || []).map((s: any) => resolveFileUrl(s.fileUrl)),
     comments: (row.comments || []).map((c: any) => ({
       id: c.commentId,
       authorName: c.authorName,

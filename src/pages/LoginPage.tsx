@@ -8,15 +8,13 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
-import { USERS } from '../data';
+import { USERS } from '../constants';
 
 /**
- * Login page — extracted from App.tsx (lines 362–489).
- * Handles credential submission, quick-login shortcuts, and redirects to /dashboard on success.
- *
- * UPDATED: handleLogin / handleSwitchUser in AppContext are now async (they
- * call the real Spring Boot backend), so this component awaits them and
- * shows a small "logging in..." state instead of navigating immediately.
+ * Login page. Handles credential submission, quick-login shortcuts, and
+ * redirects to /dashboard on success. handleLogin / handleSwitchUser in
+ * AppContext are async since they call the real Spring Boot backend, so
+ * this component awaits them and shows a brief "logging in..." state.
  */
 export default function LoginPage() {
   const { currentUser, handleLogin, handleSwitchUser } = useAppContext();

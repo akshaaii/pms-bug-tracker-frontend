@@ -1,11 +1,10 @@
 import React from 'react';
 import { BookOpen, X } from 'lucide-react';
-import { LEARNINGS } from '../../data';
+import { LEARNINGS } from '../../constants';
 import { useAppContext } from '../../context/AppContext';
 
 /**
- * Learnings dialog overlay — extracted from the inline JSX in App.tsx (lines 1153–1198).
- * Reads open state and close handler from AppContext.
+ * Learnings dialog overlay. Reads open state and close handler from AppContext.
  */
 export default function LearningsModal() {
   const { isLearningsOpen, setIsLearningsOpen } = useAppContext();

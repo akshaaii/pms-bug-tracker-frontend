@@ -9,11 +9,11 @@ export const ALL_STATUSES: BugStatus[] = [
   'RESOLVED', 'CLOSED', 'REOPENED', 'DEFERRED', 'REJECTED/INVALID', 'DUPLICATE/ALREADY FIXED',
 ];
 
-// Rule 2: which statuses each role is allowed to set.
+// Which statuses each role is allowed to set.
 export const TESTER_ALLOWED_STATUSES: BugStatus[] = ['OPEN', 'ASSIGNED', 'TESTING', 'RESOLVED', 'REOPENED', 'DEFERRED', 'CLOSED'];
 export const DEVELOPER_ALLOWED_STATUSES: BugStatus[] = ['IN PROGRESS', 'READY FOR TESTING', 'REJECTED/INVALID', 'DUPLICATE/ALREADY FIXED'];
 
-// Rule 3: valid "from -> to" transitions. Anything not listed here will be
+// Valid "from -> to" transitions. Anything not listed here will be
 // rejected by the backend with INVALID_STATUS_TRANSITION.
 export const VALID_TRANSITIONS: Record<string, BugStatus[]> = {
   OPEN: ['ASSIGNED', 'REJECTED/INVALID', 'DUPLICATE/ALREADY FIXED'],
@@ -32,7 +32,7 @@ export const VALID_TRANSITIONS: Record<string, BugStatus[]> = {
 /**
  * Returns the list of statuses that are BOTH (a) a valid transition from the
  * bug's current status, and (b) allowed for the acting user's role.
- * This is the intersection the Change Status dropdown must show (rules 2 & 3).
+ * This is the intersection the Change Status dropdown must show.
  */
 export function getAvailableStatusOptions(currentStatus: string, role: 'QA Lead' | 'Sr. Developer'): BugStatus[] {
   const roleAllowed = role === 'QA Lead' ? TESTER_ALLOWED_STATUSES : DEVELOPER_ALLOWED_STATUSES;
