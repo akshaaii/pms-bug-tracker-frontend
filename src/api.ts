@@ -60,6 +60,10 @@ async function apiFetch(path: string, options: RequestInit = {}) {
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
+      // Bypasses ngrok's browser-warning interstitial page on free tunnels -
+      // without this, a device/browser that has never hit this URL before
+      // gets an HTML warning page back instead of JSON on its first request.
+      'ngrok-skip-browser-warning': 'true',
       ...(options.headers || {}),
     },
   });
@@ -283,6 +287,9 @@ export async function uploadScreenshot(bugId: string, file: File) {
   const res = await fetch(`${BASE_URL}/bugs/${bugId}/screenshots`, {
     method: 'POST',
     credentials: 'include',
+    headers: {
+      'ngrok-skip-browser-warning': 'true',
+    },
     body: formData,
   });
 
