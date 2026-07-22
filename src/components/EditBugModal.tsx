@@ -5,6 +5,7 @@ import {
 import { Bug, Priority, Severity, BugStatus, Comment, ProjectModule } from '../types';
 import { useAppContext, UpdateBugPayload } from '../context/AppContext';
 import { addComment } from '../api';
+import AuthedImage from './AuthedImage';
 import { TESTER_ALLOWED_STATUSES } from '../statusWorkflow';
 
 interface EditBugModalProps {
@@ -205,7 +206,7 @@ export default function EditBugModal({ bug, onClose, onUpdate }: EditBugModalPro
                 <div className="grid grid-cols-3 gap-3">
                   {bug.artifacts.map((url, i) => (
                     <div key={i} className="relative rounded-lg overflow-hidden border border-[#2a2d3e] aspect-video">
-                      <img src={url} alt="Attachment" className="w-full h-full object-cover grayscale" referrerPolicy="no-referrer" />
+                      <AuthedImage src={url} alt="Attachment" className="w-full h-full object-cover grayscale" />
                       <div className="absolute inset-0 bg-[#0d1226]/40 flex items-center justify-center">
                         <span className="text-[10px] text-[#dee1fd] bg-[#1a1f32]/85 px-2 py-0.5 rounded font-mono border border-[#2a2d3e]">Asset {i + 1}</span>
                       </div>

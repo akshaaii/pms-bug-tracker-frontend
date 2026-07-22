@@ -3,6 +3,7 @@ import { ArrowLeft, Edit3, X, CheckCircle, AlertCircle, Database, Calendar, Hist
 import { Bug, Severity } from '../types';
 import { useAppContext } from '../context/AppContext';
 import { addComment } from '../api';
+import AuthedImage from './AuthedImage';
 
 interface BugDetailModalProps {
   bug: Bug | null;
@@ -130,7 +131,7 @@ export default function BugDetailModal({ bug, userRole, onClose, onEdit }: BugDe
                 <div className="flex flex-wrap gap-4">
                   {bug.artifacts.map((url, i) => (
                     <div key={i} onClick={() => window.open(url, '_blank')} className="group relative cursor-pointer border border-[#2a2d3e] rounded-lg overflow-hidden w-48 aspect-video">
-                      <img src={url} alt="Evidence" referrerPolicy="no-referrer" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                      <AuthedImage src={url} alt="Evidence" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                         <Download className="w-5 h-5 text-white" />
                       </div>
