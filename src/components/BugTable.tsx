@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { MoreVertical, Eye, Edit3, RotateCcw, RefreshCw, UserPlus, Info, User as UserIcon } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { ChevronRight, MoreVertical, Eye, Edit3, RotateCcw, RefreshCw, UserPlus, Info, User as UserIcon } from 'lucide-react';
 import { Bug, Severity, Priority, BugStatus } from '../types';
 import { useAppContext } from '../context/AppContext';
+import { formatDateTime } from '../utils/formatDate';
 
 interface BugTableProps {
   bugs: Bug[];
@@ -23,6 +24,27 @@ export default function BugTable({
   onReassignBug,
 }: BugTableProps) {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+
+  // Tracks whether the table is wider than the screen and whether there is
+  // still more to scroll to on the right, so we can show a clear hint.
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateScrollHint = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollRight(el.scrollWidth - el.clientWidth - el.scrollLeft > 4);
+  }, []);
+
+  useEffect(() => {
+    updateScrollHint();
+    window.addEventListener('resize', updateScrollHint);
+    return () => window.removeEventListener('resize', updateScrollHint);
+  }, [updateScrollHint, bugs]);
+
+  const scrollRight = () => {
+    scrollRef.current?.scrollBy({ left: 400, behavior: 'smooth' });
+  };
   const { resolveModuleName, resolveEmployeeName } = useAppContext();
 
   const isTester = userRole === 'QA Lead';
@@ -73,7 +95,22 @@ export default function BugTable({
 
   return (
     <div className="bg-[#161a2e] border border-[#2a2d3e] rounded-xl overflow-visible shadow-2xl relative">
-      <div className="overflow-x-auto">
+      {/* Scroll hint: appears only while there are more columns to the right */}
+      {canScrollRight && (
+        <>
+          <div className="pointer-events-none absolute top-0 right-0 bottom-3 w-16 bg-gradient-to-l from-[#161a2e] to-transparent z-10 rounded-r-xl" />
+          <button
+            type="button"
+            onClick={scrollRight}
+            title="Scroll right to see more columns"
+            className="absolute top-2 right-2 z-20 flex items-center gap-1 bg-[#294fdb] hover:bg-blue-600 text-white text-[10px] font-bold pl-2.5 pr-1.5 py-1 rounded-full shadow-lg cursor-pointer animate-pulse hover:animate-none"
+          >
+            <span>More columns</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </>
+      )}
+      <div ref={scrollRef} onScroll={updateScrollHint} className="overflow-x-auto h-scroll pb-1 rounded-xl">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-[#1a1f32] border-b border-[#2a2d3e]">
@@ -118,8 +155,8 @@ export default function BugTable({
                   </td>
                   <td className="px-4 py-3.5 whitespace-nowrap">{getPriorityElement(bug.priority)}</td>
                   <td className="px-4 py-3.5 whitespace-nowrap">{getStatusBadge(bug.status)}</td>
-                  <td className="px-4 py-3.5 text-xs text-[#8e90a0] whitespace-nowrap">{bug.createdDate}</td>
-                  <td className="px-4 py-3.5 text-xs text-[#8e90a0] whitespace-nowrap">{bug.updatedDate}</td>
+                  <td className="px-4 py-3.5 text-xs text-[#8e90a0] whitespace-nowrap">{formatDateTime(bug.createdDate)}</td>
+                  <td className="px-4 py-3.5 text-xs text-[#8e90a0] whitespace-nowrap">{formatDateTime(bug.updatedDate)}</td>
 
                   {/* Actions Column */}
                   <td className="px-4 py-3.5 text-right whitespace-nowrap relative overflow-visible">

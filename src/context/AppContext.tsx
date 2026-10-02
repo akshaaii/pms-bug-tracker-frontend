@@ -40,6 +40,9 @@ interface AppContextValue {
   pageSize: number;
   setPageSize: (size: number) => void;
   refetchBugs: () => void;
+  // Increments after every successful add/edit/status change/reopen/reassign,
+  // so pages holding their own live copy of the data (Task Board, Team, Reports) refresh instantly.
+  dataVersion: number;
   handleAddNewBug: (payload: CreateBugPayload) => Promise<Bug>;
   handleUpdateBug: (bugId: string, payload: UpdateBugPayload) => Promise<Bug>;
   handleConfirmStatus: (bugId: string, newStatus: BugStatus, comment: string) => Promise<void>;
@@ -144,6 +147,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [pageInfo, setPageInfo] = useState<PageInfo>(EMPTY_PAGE);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
+  const [dataVersion, setDataVersion] = useState(0);
+  // Bugs opened from a page that isn't backed by the table's current page
+  // (e.g. a card on the Task Board that is on page 2 of the table).
+  const [modalBugCache, setModalBugCache] = useState<Record<string, Bug>>({});
 
   // Lookup/dropdown data
   const [projects, setProjects] = useState<Project[]>([]);
@@ -176,16 +183,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // GET /bugs/{bugId} and merge the full detail into local state so Edit/View
   // always have accurate data - especially versionNum for optimistic locking.
   useEffect(() => {
-    const idToLoad = selectedBugId || editBugId;
+    const idToLoad = selectedBugId || editBugId || statusChangeBugId || reopenBugId || reassignBugId;
     if (!idToLoad) return;
     setIsLoadingBugDetail(true);
     fetchBugDetail(idToLoad)
       .then(full => {
         setBugs(prev => prev.map(b => (b.id === full.id ? { ...b, ...full } : b)));
+        setModalBugCache(prev => ({ ...prev, [full.id]: { ...(prev[full.id] || {}), ...full } }));
       })
       .catch(() => { /* 401 handled globally; other errors leave the summary row in place */ })
       .finally(() => setIsLoadingBugDetail(false));
-  }, [selectedBugId, editBugId]);
+  }, [selectedBugId, editBugId, statusChangeBugId, reopenBugId, reassignBugId]);
 
   // ─── Session boot check ─────────────────────────────────────────────────────
   // on app boot, validate the session against the backend before
@@ -386,6 +394,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // (disable-until-response, re-enable-on-error) and show the
   // backend's exact message.
 
+  // Applies a server-confirmed bug update everywhere it lives, then tells the
+  // live pages (Task Board etc.) to refresh.
+  const applyBugUpdate = (updated: Bug) => {
+    setBugs(prev => prev.map(b => (b.id === updated.id ? updated : b)));
+    setModalBugCache(prev => (prev[updated.id] ? { ...prev, [updated.id]: updated } : prev));
+    setDataVersion(v => v + 1);
+  };
+
   const handleAddNewBug = async (payload: CreateBugPayload): Promise<Bug> => {
     const created = await apiCreateBug({
       projectId: payload.projectId,
@@ -414,18 +430,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     setPage(0);
     loadBugs();
+    setDataVersion(v => v + 1);
     return finalBug;
   };
 
   const handleUpdateBug = async (bugId: string, payload: UpdateBugPayload): Promise<Bug> => {
     const updated = await apiUpdateBug(bugId, payload);
-    setBugs(prev => prev.map(b => (b.id === updated.id ? updated : b)));
+    applyBugUpdate(updated);
     return updated;
   };
 
   const handleConfirmStatus = async (bugId: string, newStatus: BugStatus, comment: string): Promise<void> => {
     const updated = await apiUpdateBugStatus(bugId, newStatus, comment);
-    setBugs(prev => prev.map(b => (b.id === bugId ? updated : b)));
+    applyBugUpdate(updated);
   };
 
   const handleConfirmReopen = async (
@@ -440,12 +457,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       screenshotUrl = uploaded.fileUrl;
     }
     const updated = await apiReopenBug(bugId, reason, comment, screenshotUrl);
-    setBugs(prev => prev.map(b => (b.id === bugId ? updated : b)));
+    applyBugUpdate(updated);
   };
 
   const handleConfirmReassign = async (bugId: string, newAssigneeId: string, comment?: string): Promise<void> => {
     const updated = await apiReassignBug(bugId, newAssigneeId, comment);
-    setBugs(prev => prev.map(b => (b.id === bugId ? updated : b)));
+    applyBugUpdate(updated);
   };
 
   // ─── Derived values ────────────────────────────────────────────────────────
@@ -472,11 +489,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const resolvedTodayCount = bugs.filter(b => !b.archived && (b.status === 'RESOLVED' || b.status === 'CLOSED')).length;
   const pendingReviewCount = bugs.filter(b => !b.archived && (b.status === 'TESTING' || b.status === 'IN PROGRESS')).length;
 
-  const activeDetailBug = bugs.find(b => b.id === selectedBugId) ?? null;
-  const activeEditBug = bugs.find(b => b.id === editBugId) ?? null;
-  const activeReopenBug = bugs.find(b => b.id === reopenBugId) ?? null;
-  const activeStatusChangeBug = bugs.find(b => b.id === statusChangeBugId) ?? null;
-  const activeReassignBug = bugs.find(b => b.id === reassignBugId) ?? null;
+  const activeDetailBug = bugs.find(b => b.id === selectedBugId) ?? ((selectedBugId && modalBugCache[selectedBugId]) || null);
+  const activeEditBug = bugs.find(b => b.id === editBugId) ?? ((editBugId && modalBugCache[editBugId]) || null);
+  const activeReopenBug = bugs.find(b => b.id === reopenBugId) ?? ((reopenBugId && modalBugCache[reopenBugId]) || null);
+  const activeStatusChangeBug = bugs.find(b => b.id === statusChangeBugId) ?? ((statusChangeBugId && modalBugCache[statusChangeBugId]) || null);
+  const activeReassignBug = bugs.find(b => b.id === reassignBugId) ?? ((reassignBugId && modalBugCache[reassignBugId]) || null);
 
   // ─── Context value ─────────────────────────────────────────────────────────
 
@@ -495,6 +512,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     pageSize,
     setPageSize: (size: number) => { setPageSize(size); setPage(0); },
     refetchBugs: loadBugs,
+    dataVersion,
     handleAddNewBug,
     handleUpdateBug,
     handleConfirmStatus,

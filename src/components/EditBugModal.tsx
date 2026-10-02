@@ -7,6 +7,7 @@ import { useAppContext, UpdateBugPayload } from '../context/AppContext';
 import { addComment } from '../api';
 import AuthedImage from './AuthedImage';
 import { TESTER_ALLOWED_STATUSES } from '../statusWorkflow';
+import { formatDateTime } from '../utils/formatDate';
 
 interface EditBugModalProps {
   bug: Bug | null;
@@ -235,7 +236,7 @@ export default function EditBugModal({ bug, onClose, onUpdate }: EditBugModalPro
                       <div className="flex-1 min-w-0">
                         <div className="flex items-baseline justify-between">
                           <span className="text-xs font-bold text-[#dee1fd] font-sans">{item.authorName}</span>
-                          <span className="text-[9px] text-[#8e90a0] font-mono">{item.timestamp}</span>
+                          <span className="text-[9px] text-[#8e90a0] font-mono">{formatDateTime(item.timestamp)}</span>
                         </div>
                         <div className="bg-[#161a2e] p-2.5 rounded-lg rounded-tl-none border border-[#2a2d3e]/60 mt-1 max-w-full">
                           <p className="text-xs text-[#c4c5d7] font-sans leading-normal whitespace-pre-wrap">{item.content}</p>
@@ -379,11 +380,11 @@ export default function EditBugModal({ bug, onClose, onUpdate }: EditBugModalPro
             <div className="pt-4 border-t border-[#2a2d3e]/50 space-y-2">
               <div className="flex justify-between text-xs font-sans text-[#8e90a0]">
                 <span>Created Log:</span>
-                <span className="text-[#dee1fd]">{bug.createdDate}</span>
+                <span className="text-[#dee1fd]">{formatDateTime(bug.createdDate)}</span>
               </div>
               <div className="flex justify-between text-xs font-sans text-[#8e90a0]">
                 <span>Last Modified:</span>
-                <span className="text-[#dee1fd]">{bug.updatedDate}</span>
+                <span className="text-[#dee1fd]">{formatDateTime(bug.updatedDate)}</span>
               </div>
             </div>
 

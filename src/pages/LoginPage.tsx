@@ -158,7 +158,7 @@ export default function LoginPage() {
                 onClick={() => quickLogin('tester')}
                 className="bg-[#1a1f32] hover:bg-[#2f3449] border border-[#2a2d3e] text-[11px] py-2 rounded-lg font-bold font-sans text-[#b8c3ff] transition-all text-center disabled:opacity-50"
               >
-                Riyaz (QA Lead)
+                Akshay (QA Lead)
               </button>
               <button
                 type="button"

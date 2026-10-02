@@ -3,7 +3,7 @@ import { Bug, User } from './types';
 export const USERS: Record<string, User> = {
   tester: {
     username: 'tester',
-    fullName: 'Riyaz',
+    fullName: 'Akshay',
     role: 'QA Lead',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
   },
@@ -42,7 +42,7 @@ export const INITIAL_BUGS: Bug[] = [
     severity: 'CRITICAL',
     priority: 'HIGH',
     status: 'OPEN',
-    reportedBy: 'Riyaz',
+    reportedBy: 'Akshay',
     reportedByTitle: 'QA Lead',
     reportedByAvatar: USERS.tester.avatar,
     assignedTo: 'Antony Lawrence',
@@ -70,7 +70,7 @@ export const INITIAL_BUGS: Bug[] = [
       },
       {
         id: 'c2',
-        authorName: 'Riyaz',
+        authorName: 'Akshay',
         authorAvatar: USERS.tester.avatar,
         authorRole: 'QA Lead',
         content: 'Added server logs confirming token verify returns 401 code infinitely.',
@@ -81,8 +81,8 @@ export const INITIAL_BUGS: Bug[] = [
       {
         id: 'a1',
         type: 'report',
-        user: 'Riyaz',
-        message: 'Bug Reported by Riyaz',
+        user: 'Akshay',
+        message: 'Bug Reported by Akshay',
         timestamp: 'Yesterday'
       },
       {
@@ -134,7 +134,7 @@ export const INITIAL_BUGS: Bug[] = [
     severity: 'MINOR',
     priority: 'LOW',
     status: 'IN PROGRESS',
-    reportedBy: 'Riyaz',
+    reportedBy: 'Akshay',
     reportedByTitle: 'QA Lead',
     reportedByAvatar: USERS.tester.avatar,
     assignedTo: 'Antony Lawrence',
@@ -152,7 +152,7 @@ export const INITIAL_BUGS: Bug[] = [
       {
         id: 'atl_1',
         type: 'report',
-        user: 'Riyaz',
+        user: 'Akshay',
         message: 'Bug Reported',
         timestamp: '4 days ago'
       }
@@ -166,7 +166,7 @@ export const INITIAL_BUGS: Bug[] = [
     severity: 'CRITICAL',
     priority: 'HIGH',
     status: 'IN PROGRESS',
-    reportedBy: 'Riyaz',
+    reportedBy: 'Akshay',
     reportedByTitle: 'QA Lead',
     reportedByAvatar: USERS.tester.avatar,
     assignedTo: 'Antony Lawrence',
@@ -195,7 +195,7 @@ export const INITIAL_BUGS: Bug[] = [
       {
         id: 'a4029_1',
         type: 'report',
-        user: 'Riyaz',
+        user: 'Akshay',
         message: 'Bug Reported',
         timestamp: 'Oct 24, 2023'
       },
@@ -216,7 +216,7 @@ export const INITIAL_BUGS: Bug[] = [
     severity: 'MAJOR',
     priority: 'HIGH',
     status: 'OPEN',
-    reportedBy: 'Riyaz',
+    reportedBy: 'Akshay',
     reportedByTitle: 'QA Lead',
     reportedByAvatar: USERS.tester.avatar,
     assignedTo: 'Antony Lawrence',
@@ -234,7 +234,7 @@ export const INITIAL_BUGS: Bug[] = [
       {
         id: 'at_4031_1',
         type: 'report',
-        user: 'Riyaz',
+        user: 'Akshay',
         message: 'Bug Reported',
         timestamp: 'Oct 25, 2023'
       }
@@ -280,10 +280,10 @@ export const INITIAL_BUGS: Bug[] = [
     severity: 'MAJOR',
     priority: 'HIGH',
     status: 'OPEN',
-    reportedBy: 'Riyaz',
+    reportedBy: 'Akshay',
     reportedByAvatar: USERS.tester.avatar,
     reportedByTitle: 'QA Lead',
-    assignedTo: 'Riyaz', // Graphics Lead / QA Lead role
+    assignedTo: 'Akshay', // Graphics Lead / QA Lead role
     assignedToAvatar: USERS.tester.avatar,
     assignedToTitle: 'Graphics Lead',
     environment: 'Windows 11 Pro / RTX 4090 / Vulkan 1.3',
@@ -318,7 +318,7 @@ export const INITIAL_BUGS: Bug[] = [
       {
         id: 'at1042_1',
         type: 'report',
-        user: 'Riyaz',
+        user: 'Akshay',
         message: 'Bug Reported',
         timestamp: 'Oct 24, 09:12 AM'
       }
@@ -335,7 +335,7 @@ export const INITIAL_BUGS: Bug[] = [
     reportedBy: 'Anita Raj',
     reportedByTitle: 'QA Lead',
     reportedByAvatar: USERS.anita.avatar,
-    assignedTo: 'Riyaz',
+    assignedTo: 'Akshay',
     assignedToTitle: 'QA Lead',
     assignedToAvatar: USERS.tester.avatar,
     environment: 'Sprint 12',
@@ -356,7 +356,7 @@ export const INITIAL_BUGS: Bug[] = [
     severity: 'CRITICAL',
     priority: 'HIGH',
     status: 'IN PROGRESS',
-    reportedBy: 'Riyaz',
+    reportedBy: 'Akshay',
     reportedByTitle: 'QA Lead',
     reportedByAvatar: USERS.tester.avatar,
     assignedTo: 'Antony Lawrence',
