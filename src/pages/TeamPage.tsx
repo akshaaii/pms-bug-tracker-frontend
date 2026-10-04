@@ -3,6 +3,7 @@ import { ArrowRight, Mail, User as UserIcon } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import { useLiveBugs } from '../hooks/useLiveBugs';
+import DeveloperTasksView from './DeveloperTasksView';
 
 // Bugs in these statuses are finished (or closed out), so they no longer count as a developer's current work.
 const FINISHED_STATUSES = ['RESOLVED', 'CLOSED', 'REJECTED/INVALID', 'DUPLICATE/ALREADY FIXED'];
@@ -20,7 +21,7 @@ function getWorkload(openTickets: number) {
  * Shows workload cards for real Sr. Developers (from GET /resources/developers)
  * and a shortcut to filter the Bugs page by that developer's employeeId.
  */
-export default function TeamPage() {
+function QaTeamRoster() {
   const { developers, setFilters } = useAppContext();
   const { liveBugs } = useLiveBugs();
   const navigate = useNavigate();
@@ -102,4 +103,14 @@ export default function TeamPage() {
       )}
     </div>
   );
+}
+
+/**
+ * The /team route. QA Leads see the whole developer roster and workloads;
+ * developers see only their own pending tasks (never their teammates).
+ */
+export default function TeamPage() {
+  const { currentUser } = useAppContext();
+  if (currentUser?.role === 'Sr. Developer') return <DeveloperTasksView />;
+  return <QaTeamRoster />;
 }

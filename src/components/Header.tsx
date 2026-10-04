@@ -34,7 +34,7 @@ export default function Header({
   const notifications = [
     { id: '1', text: 'Sarah Chen added a comment on BUG-1042', time: '15m ago', unread: true },
     { id: '2', text: 'System Health metrics dropped below 95%', time: '1h ago', unread: true },
-    { id: '3', text: 'Akshay reopened BUG-0003', time: 'Yesterday', unread: false },
+    { id: '3', text: 'Riyaz reopened BUG-0003', time: 'Yesterday', unread: false },
   ];
 
   // Exports whatever bug rows are currently loaded (the developer's
@@ -128,7 +128,7 @@ export default function Header({
               >
                 <div className="w-2 h-2 rounded-full bg-emerald-400" />
                 <div>
-                  <p className="font-bold">Akshay</p>
+                  <p className="font-bold">Riyaz</p>
                   <p className="text-[10px] text-[#8e90a0]">QA Lead (Tester credentials)</p>
                 </div>
               </button>
@@ -181,7 +181,7 @@ export default function Header({
           <button
             id="header-help-trigger"
             title="System Documentation & Support Help"
-            onClick={() => alert("CSE - PMS System Help Guide:\n\n1. Use credentials 'tester'/'tester' to view Akshay's QA view.\n2. Use credentials 'developer'/'developer' to view Antony Lawrence's Developer board.\n3. Create dynamic workflows with status updates, comment logs, and reopen pipelines.\n4. Click any row or sidebar button for complete fluid control.")}
+            onClick={() => alert("CSE - PMS System Help Guide:\n\n1. Use credentials 'tester'/'tester' to view Riyaz's QA view.\n2. Use credentials 'developer'/'developer' to view Antony Lawrence's Developer board.\n3. Create dynamic workflows with status updates, comment logs, and reopen pipelines.\n4. Click any row or sidebar button for complete fluid control.")}
             className="p-1.5 text-[#8e90a0] hover:text-[#b8c3ff] hover:bg-[#161a2e] rounded-full transition-all"
           >
             <HelpCircle className="w-[18px] h-[18px]" />
