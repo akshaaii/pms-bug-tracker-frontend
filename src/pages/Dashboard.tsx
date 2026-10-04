@@ -9,6 +9,7 @@ import {
   History,
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { formatDateTime } from '../utils/formatDate';
 
 /**
  * Dashboard page. Shows summary metric cards, bug volume chart,
@@ -149,13 +150,13 @@ export default function Dashboard() {
             <span>Live Audit Timeline Log</span>
           </h3>
 
-          <div className="relative pl-4 border-l border-[#2a2d3e] space-y-5 h-[340px] overflow-y-auto custom-scrollbar">
+          <div className="relative pl-4 border-l border-[#2a2d3e] space-y-5">
             {bugs.slice(0, 6).map((b) => (
               <div key={b.id} className="relative text-xs">
                 <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-[#294fdb] border-2 border-[#161a2e]" />
                 <p className="font-bold text-[#dee1fd] font-sans">{b.id}</p>
                 <p className="text-[#c4c5d7] text-[11px] mt-0.5 line-clamp-2">{b.title}</p>
-                <span className="text-[10px] text-[#8e90a0] font-mono mt-0.5 block">{b.updatedDate}</span>
+                <span className="text-[10px] text-[#8e90a0] font-mono mt-0.5 block">{formatDateTime(b.updatedDate)}</span>
               </div>
             ))}
           </div>

@@ -1,17 +1,52 @@
 import React from 'react';
+import { useLiveBugs } from '../hooks/useLiveBugs';
+import { BugStatus, Severity } from '../types';
 
 /**
- * Reports page. Shows SLA performance metrics and heap diagnostics.
+ * Reports page. Shows SLA targets plus a live breakdown of bugs by status and severity.
  */
+
+const STATUS_GROUPS: { label: string; statuses: BugStatus[]; bar: string }[] = [
+  { label: 'Open / assigned', statuses: ['OPEN', 'ASSIGNED', 'REOPENED', 'DEFERRED'], bar: 'bg-[#b8c3ff]' },
+  { label: 'In development', statuses: ['IN PROGRESS'], bar: 'bg-amber-400' },
+  { label: 'In QA verification', statuses: ['READY FOR TESTING', 'TESTING'], bar: 'bg-purple-400' },
+  { label: 'Resolved / closed', statuses: ['RESOLVED', 'CLOSED', 'REJECTED/INVALID', 'DUPLICATE/ALREADY FIXED'], bar: 'bg-emerald-400' },
+];
+
+const SEVERITY_ROWS: { label: string; value: Severity; bar: string }[] = [
+  { label: 'Critical', value: 'CRITICAL', bar: 'bg-red-400' },
+  { label: 'Major', value: 'MAJOR', bar: 'bg-orange-400' },
+  { label: 'Minor', value: 'MINOR', bar: 'bg-blue-400' },
+  { label: 'Trivial', value: 'TRIVIAL', bar: 'bg-zinc-400' },
+];
+
+function CountBar({ label, count, total, bar }: { label: string; count: number; total: number; bar: string }) {
+  const pct = total > 0 ? (count / total) * 100 : 0;
+  return (
+    <div>
+      <div className="flex justify-between mb-1">
+        <span>{label}</span>
+        <span className="font-bold text-[#dee1fd]">{count}</span>
+      </div>
+      <div className="h-2 w-full bg-[#1a1f32] rounded overflow-hidden border border-[#2a2d3e]">
+        <div className={`h-full ${bar}`} style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
+
 export default function ReportsPage() {
+  const { liveBugs, loaded } = useLiveBugs();
+  const total = liveBugs.length;
+
   return (
     <div className="space-y-6 animate-in fade-in duration-200 uppercase select-none font-mono text-xs">
       <div>
-        <h2 className="text-xl font-bold font-sans tracking-tight text-[#dee1fd] normal-case">System performance SLA reports</h2>
-        <p className="text-xs text-[#8e90a0] font-sans mt-0.5 normal-case">SLA guarantees, mean time to resolve (MTTR), heap analytics, and thread monitors.</p>
+        <h2 className="text-xl font-bold font-sans tracking-tight text-[#dee1fd] normal-case">Bug reports &amp; SLA</h2>
+        <p className="text-xs text-[#8e90a0] font-sans mt-0.5 normal-case">Service-level targets, mean time to resolve (MTTR), and a live breakdown of all bugs.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
 
         {/* SLA Performance */}
         <div className="bg-[#161a2e] p-5 rounded-xl border border-[#2a2d3e] space-y-4 shadow-lg text-left">
@@ -51,16 +86,37 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        {/* VRAM Heap Diagnostics */}
-        <div className="bg-[#161a2e] p-5 rounded-xl border border-[#2a2d3e] space-y-4 shadow-lg text-left">
-          <h3 className="text-sm font-bold text-[#dee1fd] tracking-tight normal-case">VRAM Heap &amp; Leak Containment</h3>
-          <p className="text-xs text-[#8e90a0] font-sans normal-case">Diagnostic verification on physics threads allocators.</p>
+        {/* Live breakdown */}
+        <div className="bg-[#161a2e] p-5 rounded-xl border border-[#2a2d3e] space-y-5 shadow-lg text-left">
+          <div className="flex items-baseline justify-between">
+            <h3 className="text-sm font-bold text-[#dee1fd] tracking-tight normal-case">Live bug breakdown</h3>
+            <span className="text-[#8e90a0] normal-case font-sans">{loaded ? `${total} total` : 'Loading...'}</span>
+          </div>
 
-          <div className="bg-[#0d1226]/85 border border-[#2a2d3e] p-4 rounded space-y-1.5">
-            <p className="text-emerald-400 font-bold">&gt; Vulkan deallocation check: OK</p>
-            <p className="text-emerald-400 font-bold">&gt; Vertex data buffer handles flushed: 14/14</p>
-            <p className="text-amber-400 font-bold">&gt; Thread registers lock callbacks: WAITING_CLEANUP_SIGNAL</p>
-            <p className="text-[#8e90a0]">&gt; Heap allocation bound limits: 512MB / 12288MB (VRAM stable)</p>
+          <div className="space-y-3">
+            <p className="text-[#8e90a0] font-bold tracking-wider">By status</p>
+            {STATUS_GROUPS.map(g => (
+              <CountBar
+                key={g.label}
+                label={g.label}
+                count={liveBugs.filter(b => g.statuses.includes(b.status)).length}
+                total={total}
+                bar={g.bar}
+              />
+            ))}
+          </div>
+
+          <div className="space-y-3 pt-1">
+            <p className="text-[#8e90a0] font-bold tracking-wider">By severity</p>
+            {SEVERITY_ROWS.map(r => (
+              <CountBar
+                key={r.value}
+                label={r.label}
+                count={liveBugs.filter(b => b.severity === r.value).length}
+                total={total}
+                bar={r.bar}
+              />
+            ))}
           </div>
         </div>
 

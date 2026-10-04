@@ -80,7 +80,7 @@ export default function AppShell() {
       />
 
       {/* Main content area — offset by sidebar width */}
-      <div className="flex-1 ml-[260px] h-screen overflow-y-auto flex flex-col pt-16">
+      <div className="flex-1 ml-[260px] h-screen overflow-y-auto no-scrollbar flex flex-col pt-16">
 
         {/* Fixed top header */}
         <Header

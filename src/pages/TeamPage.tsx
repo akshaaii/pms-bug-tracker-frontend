@@ -2,21 +2,35 @@ import React from 'react';
 import { ArrowRight, Mail, User as UserIcon } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
+import { useLiveBugs } from '../hooks/useLiveBugs';
+import DeveloperTasksView from './DeveloperTasksView';
+
+// Bugs in these statuses are finished (or closed out), so they no longer count as a developer's current work.
+const FINISHED_STATUSES = ['RESOLVED', 'CLOSED', 'REJECTED/INVALID', 'DUPLICATE/ALREADY FIXED'];
+
+// Plain-language workload levels, based on how many open tickets a developer has.
+function getWorkload(openTickets: number) {
+  if (openTickets === 0) return { label: 'Free', style: 'text-emerald-400 bg-emerald-950/30 border border-emerald-800/40' };
+  if (openTickets <= 2) return { label: 'Light', style: 'text-sky-300 bg-sky-950/30 border border-sky-800/40' };
+  if (openTickets <= 4) return { label: 'Moderate', style: 'text-amber-300 bg-amber-950/20 border border-amber-800/40' };
+  return { label: 'Heavy', style: 'text-rose-400 bg-red-950/30 border border-red-800' };
+}
 
 /**
  * Team roster page.
  * Shows workload cards for real Sr. Developers (from GET /resources/developers)
  * and a shortcut to filter the Bugs page by that developer's employeeId.
  */
-export default function TeamPage() {
-  const { bugs, developers, setFilters } = useAppContext();
+function QaTeamRoster() {
+  const { developers, setFilters } = useAppContext();
+  const { liveBugs } = useLiveBugs();
   const navigate = useNavigate();
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       <div>
         <h2 className="text-xl font-bold font-sans tracking-tight text-[#dee1fd]">Engineering Workloads &amp; Roster</h2>
-        <p className="text-xs text-[#8e90a0] font-sans mt-0.5">Review developer workloads, assigned tickets, and system health status indices.</p>
+        <p className="text-xs text-[#8e90a0] font-sans mt-0.5">Review how many open tickets each developer is currently handling.</p>
       </div>
 
       {developers.length === 0 ? (
@@ -26,14 +40,10 @@ export default function TeamPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 select-none">
           {developers.map((dev) => {
-            const activeAssignedCount = bugs.filter(b => b.assignedTo === dev.employeeId && b.status !== 'CLOSED').length;
-            const healthStatus = activeAssignedCount > 3 ? 'OVERLOADED' : activeAssignedCount > 0 ? 'STABLE' : 'AVAILABLE';
-            const healthColor =
-              healthStatus === 'OVERLOADED'
-                ? 'text-rose-400 bg-red-950/30 border border-red-800'
-                : healthStatus === 'STABLE'
-                ? 'text-amber-300 bg-amber-950/20 border border-amber-800/40'
-                : 'text-emerald-400 bg-emerald-950/30 border border-emerald-800/40';
+            const activeAssignedCount = liveBugs.filter(
+              b => b.assignedTo === dev.employeeId && !FINISHED_STATUSES.includes(b.status)
+            ).length;
+            const workload = getWorkload(activeAssignedCount);
 
             return (
               <div key={dev.employeeId} className="bg-[#161a2e] border border-[#2a2d3e] p-5 rounded-xl shadow-lg relative">
@@ -53,13 +63,16 @@ export default function TeamPage() {
 
                 <div className="grid grid-cols-2 gap-4 pt-4 mt-4 border-t border-[#2a2d3e]/55 text-xs">
                   <div>
-                    <span className="block text-[10px] font-mono font-black text-[#8e90a0] uppercase tracking-wider">Active bugs</span>
-                    <span className="text-lg font-black block text-[#dee1fd] mt-0.5">{activeAssignedCount} tickets</span>
+                    <span className="block text-[10px] font-mono font-black text-[#8e90a0] uppercase tracking-wider">Open bugs</span>
+                    <span className="text-lg font-black block text-[#dee1fd] mt-0.5">{activeAssignedCount} {activeAssignedCount === 1 ? 'ticket' : 'tickets'}</span>
                   </div>
                   <div>
-                    <span className="block text-[10px] font-mono font-black text-[#8e90a0] uppercase tracking-wider">Capacity status</span>
-                    <span className={`px-2 py-0.5 rounded text-[9px] font-bold mt-1.5 block text-center font-mono uppercase tracking-wide ${healthColor}`}>
-                      {healthStatus}
+                    <span className="block text-[10px] font-mono font-black text-[#8e90a0] uppercase tracking-wider">Workload</span>
+                    <span
+                      title="Based on open tickets: 0 free, 1-2 light, 3-4 moderate, 5+ heavy"
+                      className={`px-2 py-0.5 rounded text-[9px] font-bold mt-1.5 block text-center font-mono uppercase tracking-wide ${workload.style}`}
+                    >
+                      {workload.label}
                     </span>
                   </div>
                 </div>
@@ -90,4 +103,14 @@ export default function TeamPage() {
       )}
     </div>
   );
+}
+
+/**
+ * The /team route. QA Leads see the whole developer roster and workloads;
+ * developers see only their own pending tasks (never their teammates).
+ */
+export default function TeamPage() {
+  const { currentUser } = useAppContext();
+  if (currentUser?.role === 'Sr. Developer') return <DeveloperTasksView />;
+  return <QaTeamRoster />;
 }

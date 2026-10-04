@@ -143,6 +143,22 @@ export async function fetchBugs(
   };
 }
 
+// Fetches EVERY bug the current user can see by walking through all pages
+// (the backend caps a single page at 100). Used by the Task Board, Team and
+// Reports pages, which need the full picture rather than one table page.
+export async function fetchAllBugs(): Promise<Bug[]> {
+  const PAGE_SIZE = 100;
+  const byId = new Map<string, Bug>();
+  for (let p = 0; p < 20; p++) {
+    const result = await fetchBugs({}, p, PAGE_SIZE);
+    result.bugs.forEach(b => byId.set(b.id, b));
+    if (result.page.last || result.bugs.length === 0) break;
+  }
+  // The backend doesn't guarantee an order, so sort here - otherwise cards
+  // could shuffle around every time the board refreshes.
+  return Array.from(byId.values()).sort((a, b) => a.id.localeCompare(b.id));
+}
+
 export async function fetchBugDetail(bugId: string): Promise<Bug> {
   const json = await apiFetch(`/bugs/${bugId}`);
   return mapBugFromApi(json.data);

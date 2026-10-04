@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Edit3, X, CheckCircle, AlertCircle, Database, Calendar, History, Download, Send, User as UserIcon } from 'lucide-react';
 import { Bug, Severity } from '../types';
 import { useAppContext } from '../context/AppContext';
+import { formatDateTime } from '../utils/formatDate';
 import { addComment } from '../api';
 import AuthedImage from './AuthedImage';
 
@@ -158,7 +159,7 @@ export default function BugDetailModal({ bug, userRole, onClose, onEdit }: BugDe
                       <div className="flex-1 min-w-0">
                         <div className="flex items-baseline justify-between">
                           <span className="text-xs font-bold text-[#dee1fd] font-sans">{c.authorName}</span>
-                          <span className="text-[9px] text-[#8e90a0] font-mono">{c.timestamp}</span>
+                          <span className="text-[9px] text-[#8e90a0] font-mono">{formatDateTime(c.timestamp)}</span>
                         </div>
                         <div className="bg-[#161a2e] p-2.5 rounded-lg rounded-tl-none border border-[#2a2d3e]/60 mt-1">
                           <p className="text-xs text-[#c4c5d7] font-sans leading-normal whitespace-pre-wrap">{c.content}</p>
@@ -224,10 +225,10 @@ export default function BugDetailModal({ bug, userRole, onClose, onEdit }: BugDe
                 </div>
               </div>
               <div className="flex justify-between text-xs font-sans text-[#8e90a0]">
-                <span>Created:</span><span className="text-[#dee1fd]">{bug.createdDate}</span>
+                <span>Created:</span><span className="text-[#dee1fd]">{formatDateTime(bug.createdDate)}</span>
               </div>
               <div className="flex justify-between text-xs font-sans text-[#8e90a0]">
-                <span>Updated:</span><span className="text-[#dee1fd]">{bug.updatedDate}</span>
+                <span>Updated:</span><span className="text-[#dee1fd]">{formatDateTime(bug.updatedDate)}</span>
               </div>
             </div>
 
@@ -241,7 +242,7 @@ export default function BugDetailModal({ bug, userRole, onClose, onEdit }: BugDe
                     <div key={log.id} className="relative">
                       <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-[#b8c3ff] border-2 border-[#1a1f32]"></div>
                       <p className="text-xs text-[#dee1fd] font-medium leading-normal">{log.message}</p>
-                      <span className="text-[9px] text-[#8e90a0] font-mono block mt-0.5">{log.timestamp}</span>
+                      <span className="text-[9px] text-[#8e90a0] font-mono block mt-0.5">{formatDateTime(log.timestamp)}</span>
                     </div>
                   ))
                 ) : (
