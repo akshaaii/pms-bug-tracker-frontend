@@ -98,7 +98,7 @@ export default function BugDetailModal({ bug, userRole, onClose, onEdit }: BugDe
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto flex flex-col lg:flex-row">
+        <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col lg:flex-row">
           {/* Left */}
           <div className="flex-grow lg:w-2/3 p-6 space-y-6 lg:border-r lg:border-[#2a2d3e]/40">
             <section className="space-y-2">
@@ -147,7 +147,7 @@ export default function BugDetailModal({ bug, userRole, onClose, onEdit }: BugDe
               <h4 className="text-[11px] font-mono font-black text-[#8e90a0] uppercase tracking-wider">
                 Comments ({localComments.length})
               </h4>
-              <div className="space-y-3 max-h-[220px] overflow-y-auto pr-1 custom-scrollbar">
+              <div className="space-y-3">
                 {localComments.length === 0 ? (
                   <p className="text-xs text-[#8e90a0] italic">No comments yet.</p>
                 ) : (
